@@ -1,0 +1,53 @@
+# CI plat4m release workflow
+name: Release build
+
+on:
+  push:
+    tags:
+      - v*
+    paths-ignore:
+      - '.github/workflows/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  release-gem:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            ruby: 'ruby'
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.os }} wxRuby Release (${{ github.ref_name }})
+    env:
+      GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby }}
+
+    - name: Build gem
+      run: |
+        bundle exec rake gem
+
+    - name: Upload gem to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: pkg/*.gem
+        tag: ${{ github.ref }}
+        overwrite: true
+        file_glob: true
+
+    - name: Publish gem on RubyGems
+      run: |
+        gem push pkg/*.gem
