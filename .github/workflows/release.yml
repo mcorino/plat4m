@@ -37,7 +37,7 @@ jobs:
 
     - name: Build gem
       run: |
-        bundle exec rake gem
+        rake gem
 
     - name: Upload gem to release
       uses: svenstaro/upload-release-action@v2
