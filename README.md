@@ -1,3 +1,6 @@
+[![License](https://img.shields.io/badge/license-MIT-yellowgreen.svg)](LICENSE)
+[![Gem Version](https://badge.fury.io/rb/plat4m.svg)](https://badge.fury.io/rb/plat4m)
+
 # Plat4m
 
 Plat4m is a simple runtime system platform scouting and support library specially intended to 
