@@ -1,0 +1,69 @@
+# Copyright (c) 2023 M.J.N. Corino, The Netherlands
+#
+# This software is released under the MIT license.
+
+require 'rubygems'
+require 'rubygems/package'
+begin
+  require 'rubygems/builder'
+rescue LoadError
+end
+require_relative 'lib/plat4m/version'
+
+module Plat4m
+
+  def self.manifest
+    manifest = Rake::FileList.new
+    manifest.include %w[lib/**/*]
+    manifest.include %w{LICENSE README.md}
+    manifest
+  end
+
+  def self.gem_file
+    File.join('pkg', "#{define_spec.full_name}.gem")
+  end
+
+  def self.define_spec(&block)
+    gemspec = ::Gem::Specification.new('plat4m', Plat4m::VERSION)
+    gemspec.required_rubygems_version = ::Gem::Requirement.new(">= 0") if gemspec.respond_to? :required_rubygems_version=
+    block.call(gemspec) if block_given?
+    gemspec
+  end
+
+  def self.build_gem(gemspec)
+    if defined?(::Gem::Package) && ::Gem::Package.respond_to?(:build)
+      gem_file_name = ::Gem::Package.build(gemspec)
+    else
+      gem_file_name = ::Gem::Builder.new(gemspec).build
+    end
+
+    FileUtils.mkdir_p('pkg')
+
+    FileUtils.mv(gem_file_name, 'pkg')
+  end
+
+end
+
+# source gem file
+file Plat4m.gem_file => Plat4m.manifest do
+  gemspec = Plat4m.define_spec do |gem|
+    gem.summary = %Q{Runtime system detection.}
+    gem.description = %Q{Plat4m is a simple runtime system platform scouting and support library.}
+    gem.email = 'mcorino@m2c-software.nl'
+    gem.homepage = "https://github.com/mcorino/plat4m"
+    gem.authors = ['Martin Corino']
+    gem.files = Plat4m.manifest
+    gem.require_paths = %w{lib}
+    gem.required_ruby_version = '>= 2.5'
+    gem.licenses = ['MIT']
+    gem.metadata = {
+      "bug_tracker_uri"   => "https://github.com/mcorino/plat4m/issues",
+      "homepage_uri"      => "https://github.com/mcorino/plat4m",
+      "github_repo"       => "https://github.com/mcorino/plat4m"
+    }
+  end
+  Plat4m.build_gem(gemspec)
+end
+
+desc 'Build Plat4m gem'
+task :gem => Plat4m.gem_file
