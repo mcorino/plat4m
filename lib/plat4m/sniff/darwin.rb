@@ -36,6 +36,10 @@ module Plat4m
             distro: 'macosx'
           }
           ver = `sw_vers --productVersion`.strip
+          if ver =~ /Usage:\s+sw_vers/
+            # older MacOSX
+            ver = `sw_vers -productVersion`.strip
+          end
           distro[:release] = ver.split('.').first
           distro[:version] = ver
           distro[:pkgman] = MacPkgManager.new
