@@ -50,6 +50,6 @@ module Plat4m
 
   end
 
-  self.sniffers[:windows] = Sniffer::Darwin
+  self.sniffers[:windows] = Sniffer::Windows
 
 end
