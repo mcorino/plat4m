@@ -96,15 +96,11 @@ module Plat4m
         end
 
         def has_macports?
-          if @has_macports.nil?
-            @has_macports = system('command -v port>/dev/null')
-          end
+          @has_macports
         end
 
         def has_homebrew?
-          if @has_homebrew.nil?
-            @has_homebrew = system('command -v brew>/dev/null')
-          end
+          @has_homebrew
         end
 
         class Homebrew < PkgManager
