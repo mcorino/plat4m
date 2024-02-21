@@ -43,7 +43,7 @@ module Plat4m
         @pkgman = pkgman
         @other = other
         @other.each_key do |key|
-          unless self.method(key.to_sym)
+          unless self.respond_to?(key.to_sym)
             singleton_class.class_eval <<~__CODE
               define_method(:#{key}) do
                 @other['#{key}']
