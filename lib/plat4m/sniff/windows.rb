@@ -33,15 +33,54 @@ module Plat4m
 
         def get_distro
           distro = {
-            distro: 'windows'
+            distro: RUBY_PLATFORM.match?(/mingw/i) ? 'mingw' : 'windows'
           }
           # the 'ver' command returns something like "Microsoft Windows [Version xx.xx.xx.xx]"
           match = `ver`.strip.match(/\[(.*)\]/)
           ver = match[1].split.last
           distro[:release] = ver.split('.').shift
           distro[:version] = ver
-          distro[:pkgman] = nil
+          # in case of MingW built Ruby assume availability of RubyInstaller Devkit
+          distro[:pkgman] = distro[:distro]=='mingw' ? Pacman.new(distro) : nil
           distro
+        end
+
+      end
+
+      class Pacman < PkgManager
+
+        def initialize(_distro)
+          super()
+        end
+
+        def make_install_command(*pkgs)
+          pacman_cmd("-S --needed #{ pkgs.join(' ') }")
+        end
+
+        def install(*pkgs, silent: false)
+          run(make_install_command, silent: silent)
+        end
+
+        def make_uninstall_command(*pkgs)
+          pacman_cmd("-Rsu #{pkgs.flatten.join(' ')}")
+        end
+
+        def installed?(pkg)
+          run("pacman -Qq #{pkg}", silent: true)
+        end
+
+        def available?(pkg)
+          run(%Q[pacman -Ss '^#{pkg}$'], silent: true)
+        end
+
+        protected
+
+        def run(cmd, silent: false)
+          system(%Q[bash -c "#{cmd}#{silent ? ' >/dev/null 2>&1' : ''}"])
+        end
+
+        def pacman_cmd(cmd)
+          "pacman --noconfirm #{cmd}"
         end
 
       end
