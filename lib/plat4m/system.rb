@@ -151,7 +151,7 @@ module Plat4m
     end
 
     def detect_current
-      case RbConfig::CONFIG['host_os']
+      case RbConfig::CONFIG['target_os']
       when /linux/
         sniffers[:linux].detect_system
       when /darwin/
