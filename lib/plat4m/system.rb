@@ -76,14 +76,14 @@ module Plat4m
       end
 
       def to_s
-        "#{@distro}-#{@release}[#{@id}#{@variant ? " #{@variant}" : ''}}]"
+        "#{@distro}-#{@release}[#{@id}#{@variant ? " #{@variant}" : ''}]"
       end
 
     end
 
     def initialize(platform, os)
       unless platform && platform.complete? && os && os.complete?
-        raise "Invalid system specification [#{os} @ #{platform}]"
+        raise "Invalid system specification : #{os} @ #{platform}"
       end
       @platform = platform
       @os = os
