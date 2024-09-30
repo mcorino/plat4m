@@ -8,6 +8,6 @@
 module Plat4m
 
   # Current Plat4m version.
-  VERSION = '1.1.1'
+  VERSION = '1.1.2'
 
 end
