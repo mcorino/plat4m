@@ -51,7 +51,7 @@ module Plat4m
                                   data['ID'].to_sym
                                 end,
                        distro: data['ID'].downcase,
-                       release: data['VERSION_ID']
+                       release: data['VERSION_ID'] || data['BUILD_ID']
                      }
                    elsif File.file?('/etc/redhat-release')
                      data = File.read('/etc/redhat-release').strip
