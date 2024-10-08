@@ -38,8 +38,15 @@ module Plat4m
           # the 'ver' command outputs something like "Microsoft Windows [Version xx.xx.xx.xx]"
           # the 'for ...' statement parses this and echos only the 'xx.xx.xx.xx' part
           ver = `for /f "tokens=2 delims=[]" %s in ('ver') do @(for /f "tokens=2" %v in ('echo %s') do @echo %v)`.strip
-          distro[:release] = ver.split('.').shift
           distro[:version] = ver
+          build = ver.split('.')[2].to_i
+          distro[:release] = if build >= 22000
+                               '11'
+                             elsif build >= 10240
+                               '10'
+                             else
+                               '<10'
+                             end
           # in case of MingW built Ruby assume availability of RubyInstaller Devkit
           distro[:pkgman] = distro[:distro]=='mingw' ? Pacman.new(distro) : nil
           distro
