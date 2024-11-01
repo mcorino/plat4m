@@ -94,8 +94,9 @@ module Plat4m
 
       class NixManager < PkgManager
 
-        def initialize(_distro)
+        def initialize(distro)
           super()
+          @distro = distro
           @has_sudo = system('command -v sudo > /dev/null')
         end
 
@@ -176,7 +177,13 @@ module Plat4m
       class Dnf < NixManager
 
         def installed?(pkg)
-          system("dnf list installed #{pkg} >/dev/null 2>&1")
+          if @distro[:release] >= '41'
+            # dnf v5
+            system("dnf list --installed #{pkg} >/dev/null 2>&1")
+          else
+            # dnf <= v4
+            system("dnf list installed #{pkg} >/dev/null 2>&1")
+          end
         end
 
         def available?(pkg)
