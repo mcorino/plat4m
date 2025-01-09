@@ -39,14 +39,14 @@ module Plat4m
                        hash
                      end
                      {
-                       variant: if File.file?('/etc/redhat-release')
+                       variant: if data['ID_LIKE']
+                                  data['ID_LIKE'].split.first.to_sym
+                                elsif File.file?('/etc/redhat-release')
                                   :rhel
                                 elsif File.file?('/etc/SUSE-brand') || File.file?('/etc/SuSE-release')
                                   :suse
                                 elsif File.file?('/etc/debian_version')
                                   :debian
-                                elsif data['ID_LIKE']
-                                  data['ID_LIKE'].split.first.to_sym
                                 else
                                   data['ID'].to_sym
                                 end,
@@ -78,7 +78,7 @@ module Plat4m
                      }
                    end
           distro[:pkgman] = case distro[:variant]
-                            when :debian
+                            when :debian, :ubuntu
                               Apt.new(distro)
                             when :rhel
                               Dnf.new(distro)
