@@ -40,7 +40,10 @@ module Plat4m
                      end
                      {
                        variant: if data['ID_LIKE']
-                                  data['ID_LIKE'].split.first.to_sym
+                                  case (_v = data['ID_LIKE'].split.first.to_sym)
+                                  when :ubuntu then :debian # Distro like Mint has "ID_LIKE=ubuntu debian"
+                                  else _v
+                                  end
                                 elsif File.file?('/etc/redhat-release')
                                   :rhel
                                 elsif File.file?('/etc/SUSE-brand') || File.file?('/etc/SuSE-release')
