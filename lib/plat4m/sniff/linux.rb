@@ -88,7 +88,11 @@ module Plat4m
                             when :suse
                               Zypper.new(distro)
                             when :arch
-                              Pacman.new(distro)
+                              if distro[:distro] == 'manjaro'
+                                Pamac.new(distro)
+                              else
+                                Pacman.new(distro)
+                              end
                             end
           distro
         end
@@ -257,6 +261,30 @@ module Plat4m
 
         def get_uninstall_command(*pkgs)
           pacman_cmd("-Rsu #{pkgs.flatten.join(' ')}")
+        end
+
+      end
+
+      class Pamac < NixManager
+
+        def installed?(pkg)
+          res = `pamac search -iq ^#{pkg}$ 2>&1`.chomp.split
+          !!(res.size == 1 && res.first =~ /^#{pkg}$/)
+        end
+
+        def available?(pkg)
+          res = `pamac search -rq ^#{pkg}$ 2>&1`.chomp.split
+          !!(res.size == 1 && res.first =~ /^#{pkg}$/)
+        end
+
+        protected
+
+        def get_install_command(*pkgs)
+          "pamac install --no-confirm #{ pkgs.join(' ') }"
+        end
+
+        def get_uninstall_command(*pkgs)
+          "pamac remove --no-confirm -u #{ pkgs.join(' ') }"
         end
 
       end
