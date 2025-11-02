@@ -277,6 +277,14 @@ module Plat4m
           !!(res.size == 1 && res.first =~ /^#{pkg}$/)
         end
 
+        def make_install_command(*pkgs)
+          get_install_command(*pkgs)
+        end
+
+        def make_uninstall_command(*pkgs)
+          get_uninstall_command(*pkgs)
+        end
+
         protected
 
         def get_install_command(*pkgs)

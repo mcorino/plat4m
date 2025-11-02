@@ -8,6 +8,6 @@
 module Plat4m
 
   # Current Plat4m version.
-  VERSION = '1.1.6'.freeze
+  VERSION = '1.1.7'.freeze
 
 end
