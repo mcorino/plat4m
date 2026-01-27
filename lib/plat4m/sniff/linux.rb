@@ -88,7 +88,8 @@ module Plat4m
                             when :suse
                               Zypper.new(distro)
                             when :arch
-                              if distro[:distro] == 'manjaro'
+                              # Do not use Pamac in CI envs to circumvent 'Landlock' issues
+                              if distro[:distro] == 'manjaro' && !ENV['CI']
                                 Pamac.new(distro)
                               else
                                 Pacman.new(distro)
