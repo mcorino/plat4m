@@ -67,7 +67,8 @@ module Plat4m
           @has_sudo = system('command -v sudo > /dev/null')
           @has_macports = system('command -v port>/dev/null')
           # Homebrew has announced not to support MacOS on Intel anymore so do not use homebrew there
-          @has_homebrew = !System.current.intel? && system('command -v brew>/dev/null')
+          is_intel = Darwin.__send__(:get_arch) =~ /x86/
+          @has_homebrew = !is_intel && system('command -v brew>/dev/null')
         end
 
         def installed?(pkg)
